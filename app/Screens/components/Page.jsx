@@ -12,29 +12,35 @@ import { client } from "./../../../utils/KindeConfig";
 import Services from "../../../utils/Services";
 import { useNavigation } from "@react-navigation/native";
 import Lottie from "../components/Lottie";
+
 const Page = () => {
   const navigation = useNavigation();
   const [load, setLoad] = useState(false);
+
   const handleSignIn = async () => {
     try {
       setLoad(true);
       const token = await client.login();
-      // console.log(token);
+
       if (token) {
         // User was authenticated
         await Services.storeData("login", "true");
-        console.log("data stored successfully");
+        console.log("Data stored successfully");
         navigation.replace("Home");
       } else {
-        console.log("something went wrong");
+        ToastAndroid.show("Something went wrong", ToastAndroid.LONG);
         navigation.navigate("Page");
       }
     } catch (error) {
-      ToastAndroid.show(`Error while login ${error}`, ToastAndroid.LONG);
+      // Suppress the specific error message you want to ignore
+      if (error.message == "dismiss") {
+        ToastAndroid.show("Error while logging in", ToastAndroid.LONG);
+      }
     } finally {
       setLoad(false);
     }
   };
+
   return (
     <>
       {load ? (
@@ -56,6 +62,7 @@ const Page = () => {
     </>
   );
 };
+
 const styles = StyleSheet.create({
   bgImage: {
     height: 400,
@@ -98,4 +105,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
 export default Page;
