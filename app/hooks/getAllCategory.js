@@ -18,7 +18,7 @@ export const getAllCategory = (setLoad) => {
           .from("category")
           .select("*,categoryItems(*)")
           .eq("created_by", user.email)
-          .order("id", { ascending: false });
+          .order("created_at", { ascending: false });
         // console.log("data", data);
         if (data) {
           dispatch(setCategory(data));

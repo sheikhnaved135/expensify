@@ -5,7 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Header from "./Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -14,9 +14,11 @@ import { Link, useNavigation } from "expo-router";
 import CategoryList from "./CategoryList";
 import { useSelector } from "react-redux";
 import { getAllCategory } from "./../../hooks/getAllCategory";
+import { useIsFocused, useRoute } from "@react-navigation/native";
 
 const ExpenseHome = () => {
   const [load, setLoad] = useState(false);
+  const route = useRoute();
 
   getAllCategory(setLoad);
 
@@ -58,18 +60,11 @@ const ExpenseHome = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  lottieStyle: {
-    height: 300,
-    width: 300,
-    marginBottom: 30,
-  },
 });
-
 export default ExpenseHome;

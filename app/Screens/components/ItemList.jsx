@@ -3,17 +3,17 @@ import React, { useState } from "react";
 
 const ItemList = ({ categoryList }) => {
   const [itemList, setItemList] = useState(categoryList);
-
+  // console.log(itemList);
+  const imgPreview =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJ0eIyC4TIuSzxqaeKpkP0i10b51WABAiktQ&s";
   return (
     <ScrollView style={styles.container}>
       {itemList.map((item, index) => (
         <View key={index} style={styles.itemContainer}>
-          {item.url ? (
-            <Image source={{ uri: item.url }} style={styles.itemImage} />
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={styles.itemImage} />
           ) : (
-            <View style={styles.placeholderImage}>
-              <Text style={styles.placeholderText}>No Image</Text>
-            </View>
+            <Image style={styles.itemImage} source={{ uri: imgPreview }} />
           )}
           <View style={styles.itemInfo}>
             <Text style={styles.itemName}>
@@ -37,19 +37,19 @@ const ItemList = ({ categoryList }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
+    backgroundColor: "#f8f9fa", // Light gray background for better contrast
   },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#ffffff", // White background for item
     marginBottom: 8,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: "#000", // Soft shadow for depth
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
     height: 90,
@@ -59,20 +59,20 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 8,
     marginRight: 15,
-    objectFit: "fill",
+    objectFit: "contain",
   },
   placeholderImage: {
     width: 70,
     height: 70,
     borderRadius: 8,
     marginRight: 15,
-    backgroundColor: "#3a3a3a",
+    backgroundColor: "#e0e0e0", // Light gray for placeholder
     justifyContent: "center",
     alignItems: "center",
   },
   placeholderText: {
     fontSize: 12,
-    color: "#b0b0b0",
+    color: "#6c757d", // Softer gray for placeholder text
   },
   itemInfo: {
     flex: 1,
@@ -80,20 +80,20 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#343a40", // Dark gray for item name
   },
   itemUrl: {
     fontSize: 14,
-    color: "#a0a0a0",
+    color: "#6c757d", // Softer gray for URL
   },
   itemCost: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#4caf50",
+    color: "#28a745", // Green color for cost
   },
   divider: {
     height: 1,
-    backgroundColor: "#333",
+    backgroundColor: "#ced4da", // Light gray for divider
     marginTop: 10,
   },
 });

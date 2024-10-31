@@ -20,24 +20,7 @@ const CategoryList = ({ category }) => {
   const navigation = useNavigation();
   const { user } = useSelector((store) => store.user);
   const dispatch = useDispatch();
-  const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-      const data = await supabase
-        .from("category")
-        .select("*,categoryItems(*)")
-        .eq("created_by", user.email)
-        .order("id", { ascending: false });
-      console.log(data);
-      if (data) {
-        dispatch(setCategory(data));
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
+
   const handleNavigation = (item) => {
     navigation.navigate("categoryDetail", { categoryId: item.id });
   };

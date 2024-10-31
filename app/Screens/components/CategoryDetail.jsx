@@ -6,9 +6,14 @@ import {
   TouchableOpacity,
   Modal,
   ToastAndroid,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import ItemList from "./ItemList";
@@ -22,40 +27,53 @@ const CategoryDetail = () => {
   const dispatch = useDispatch();
   const route = useRoute();
   const { categoryId } = route.params;
+
   const [modal, setModal] = useState(false);
-  const [myCategory, setMyCategory] = useState();
-  const [total, setTotal] = useState(0);
+  const [myCategory, setMyCategory] = useState(null);
+  const [load, setLoad] = useState(false);
   const [percent, setPercent] = useState(0);
   const navigation = useNavigation();
-  const [load, setLoad] = useState(false);
-  useEffect(() => {
-    const res = category.find((item) => item.id === categoryId);
-    setMyCategory(res);
-    console.log(myCategory);
-  }, [category, categoryId]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    let val = 0;
-    myCategory?.categoryItems.forEach((item) => (val += item.cost));
-    setTotal(val);
-    setPercent((val / myCategory?.assigned_budget) * 100);
+    if (isFocused) {
+      console.log("category detail useEffect is called");
+      const res = category.find((item) => item.id === categoryId);
+      console.log(res);
+      setMyCategory(res);
+    }
+  }, [isFocused, categoryId, category]);
+
+  useEffect(() => {
+    if (myCategory) {
+      const totalCost = myCategory.categoryItems.reduce(
+        (acc, item) => acc + item.cost,
+        0
+      );
+      setPercent((totalCost / myCategory.assigned_budget) * 100);
+    }
   }, [myCategory]);
 
   const handleDelete = async () => {
     setLoad(true);
     const { error } = await supabase
-      .from("category")
+      .from("categoryItems")
       .delete()
-      .eq("id", myCategory.id);
+      .eq("category_id", myCategory.id);
 
-    const { data } = await supabase
-      .from("category")
-      .select("*,categoryItems(*)")
-      .eq("created_by", user.email)
-      .order("created_at", { ascending: false });
-    dispatch(setCategory(data));
-    ToastAndroid.show("Category deleted", ToastAndroid.BOTTOM);
-    navigation.navigate("ExpenseHome");
+    await supabase.from("category").delete().eq("id", myCategory.id);
+    if (!error) {
+      const { data } = await supabase
+        .from("category")
+        .select("*,categoryItems(*)")
+        .eq("created_by", user.email)
+        .order("created_at", { ascending: false });
+      dispatch(setCategory(data));
+      ToastAndroid.show("Category deleted", ToastAndroid.BOTTOM);
+      navigation.navigate("ExpenseHome");
+    } else {
+      ToastAndroid.show("Error deleting category", ToastAndroid.BOTTOM);
+    }
     setLoad(false);
   };
 
@@ -90,17 +108,20 @@ const CategoryDetail = () => {
       </View>
 
       <Text style={styles.budgetText}>
-        Budget: ${myCategory?.assigned_budget}
+        Budget: ${myCategory.assigned_budget}
       </Text>
 
       <View style={styles.progressBarBackground}>
         <View style={[styles.progressBarFill, { width: `${percent}%` }]} />
       </View>
       <Text style={styles.progressText}>{Math.round(percent)}%</Text>
-      <View style={{ marginTop: 20 }}>
-        <ItemList categoryList={myCategory?.categoryItems} />
-      </View>
-      <TouchableOpacity style={styles.addBtn}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ItemList categoryList={myCategory.categoryItems} />
+      </ScrollView>
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => navigation.navigate("AddItemList", { categoryId })}
+      >
         <Ionicons name="add-circle" size={50} color="black" />
       </TouchableOpacity>
 
@@ -261,7 +282,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

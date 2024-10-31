@@ -8,6 +8,7 @@ import AddNewCategoryModal from "./add-new-category";
 import CategoryDetail from "./Screens/components/CategoryDetail";
 import {Provider} from 'react-redux'
 import store  from './redux/store';
+import AddItemList from './Screens/components/AddItemList';
 
 export default function RootLayout() {
   const Stack = createNativeStackNavigator();
@@ -47,6 +48,11 @@ export default function RootLayout() {
           name="categoryDetail"
           component={CategoryDetail}
           options={{ headerTitle: "Detail" }}
+        /> 
+        <Stack.Screen
+          name="AddItemList"
+          component={AddItemList}
+          options={{ headerTitle: "Add Item List" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
